@@ -49,6 +49,12 @@ UP4_ARTIFACT=${UP4_GROUPID}:${UP4_ARTIFACTID}
 UP4_TARGETS=_prepare_app_build
 UP4_OAR=${UP4_ROOT}/app/app/target/${UP4_ARTIFACTID}-${UP4_VERSION}.oar
 
+# ConQuest related vars
+CONQUEST_GROUPID=org.princeton
+CONQUEST_ARTIFACTID=conquest-app
+CONQUEST_ARTIFACT=${CONQUEST_GROUPID}:${CONQUEST_ARTIFACTID}
+CONQUEST_OAR=${CONQUEST_ONOS_ROOT}/app/target/${CONQUEST_ARTIFACTID}-${CONQUEST_ONOS_VERSION}.oar
+
 # Fabric-tna related vars
 FABRIC_TNA_GROUPID=org.stratumproject
 FABRIC_TNA_ARTIFACTID=fabric-tna
@@ -173,6 +179,19 @@ function up4-build {
 		UP4_OAR="${UP4_ROOT}"/app/app/target/"${UP4_ARTIFACTID}"-"${PROJECT_VERSION}".oar
 	fi
 	cp "${UP4_OAR}" "${LOCAL_APPS}"/
+}
+
+function conquest-build {
+	build_app "${CONQUEST_ONOS_ROOT}"/app/target \
+	"${CONQUEST_ONOS_ROOT}"/app "conquest-app/app" \
+	"${CONQUEST_ARTIFACT}" "${CONQUEST_ONOS_VERSION}" \
+	"app/target" "${CONQUEST_OAR}" "${CONQUEST_ONOS_REPO}"
+	if [ "$MVN" -eq "0" ]; then
+		extract_version "${CONQUEST_ONOS_ROOT}"/app
+		cd ../
+		CONQUEST_OAR="${CONQUEST_ONOS_ROOT}"/app/target/"${CONQUEST_ARTIFACTID}"-"${PROJECT_VERSION}".oar
+	fi
+	cp "${CONQUEST_OAR}" "${LOCAL_APPS}"/
 }
 
 function fabric-tna-build {

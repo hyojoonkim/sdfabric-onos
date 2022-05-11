@@ -62,7 +62,8 @@ SHELLCHECK_IMAGE=koalaman/shellcheck:${SHELLCHECK_TAG}
 # ONOS related
 ONOS_BASE_IMAGENAME          := onos-base:${DOCKER_TAG}${DOCKER_TAG_PROFILER}${DOCKER_TAG_BUILD_DATE}
 export ONOS_ROOT             := $(shell pwd)/onos
-ONOS_REPO                    := https://gerrit.onosproject.org/onos
+#ONOS_REPO                    := https://gerrit.onosproject.org/onos
+ONOS_REPO                    := https://github.com/hyojoonkim/onos-2.git
 # This profile contains the minimal set of ONOS built-in apps required to control SD-Fabric.
 ONOS_PROFILE                 := "sdfabric"
 PROFILER                     ?=
@@ -88,7 +89,12 @@ export UP4_REPO              := https://github.com/omec-project/up4.git
 
 # Fabric-TNA related
 export FABRIC_TNA_ROOT       := $(shell pwd)/fabric-tna
-export FABRIC_TNA_REPO       := https://github.com/stratum/fabric-tna.git
+#export FABRIC_TNA_REPO       := https://github.com/stratum/fabric-tna.git
+export FABRIC_TNA_REPO       := https://github.com/hyojoonkim/fabric-tna.git
+
+# ConQuest related
+export CONQUEST_ONOS_ROOT        := $(shell pwd)/conquest-app
+export CONQUEST_ONOS_REPO        := git@github.com:robertmacdavid/conquest-app.git
 
 .PHONY: onos trellis-control up4 fabric-tna
 
@@ -196,6 +202,31 @@ up4: ## : Checkout up4 code
 up4-build: mvn_settings.xml .onos-publish-local local-apps up4  ## : Builds up4 using local app
 	@./app-build.sh $@
 
+#conquest-build: mvn_settings.xml local-apps fabric-tna
+conquest-build: mvn_settings.xml local-apps conquest-app
+	@./app-build.sh $@
+
+conquest-app:## : Checkout conquest-app code
+	if [ ! -d "conquest-app" ]; then \
+		git clone ${CONQUEST_ONOS_REPO}; \
+	fi
+
+	@modified=$$(cd ${CONQUEST_ONOS_ROOT} && git status --porcelain); \
+	if [ ! -z "$${modified}" ]; then \
+		echo "Unable to checkout, you have pending changes in conquest-app repository"; \
+		exit 1; \
+	fi
+
+	cd ${CONQUEST_ONOS_ROOT} && git remote update
+
+	if ! (cd ${CONQUEST_ONOS_ROOT} && (git checkout origin/${CONQUEST_ONOS_VERSION} || git checkout ${CONQUEST_ONOS_VERSION})); then \
+	if ! (cd ${CONQUEST_ONOS_ROOT} && git fetch ${CONQUEST_ONOS_REPO} ${CONQUEST_ONOS_VERSION} && git checkout FETCH_HEAD); then \
+		echo "Unable to fetch the changes from the fabric-tna repository"; \
+		exit 1; \
+	fi \
+	fi
+
+
 fabric-tna: ## : Checkout fabric-tna code
 	if [ ! -d "fabric-tna" ]; then \
 		git clone ${FABRIC_TNA_REPO}; \
@@ -223,7 +254,7 @@ fabric-tna-build: mvn_settings.xml .onos-publish-local local-apps fabric-tna  ##
 apps: trellis-control up4 fabric-tna
 
 ## : Build the onos apps. Intentionally leave out t3.
-apps-build: trellis-control-build up4-build fabric-tna-build
+apps-build: trellis-control-build up4-build fabric-tna-build conquest-build
 
 onos: ## : Checkout onos code
 	if [ ! -d "onos" ]; then \

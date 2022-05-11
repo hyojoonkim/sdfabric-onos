@@ -26,8 +26,12 @@
 # (2) Checkout Local source code (local branch not yet pushed);
 # (3) Fetch from Gerrit/Github (pending review in the form of refs/changes/... or pending pull request);
 
-export ONOS_VERSION            ?= 07af21d9e116414b74152dc812cc980ca2c4c0a5
+#export ONOS_VERSION            ?= 07af21d9e116414b74152dc812cc980ca2c4c0a5
+#export ONOS_VERSION            ?= 2ca9b0e260bd8502205ae3a5f53252d918c8db31
+export ONOS_VERSION            ?= 6ce21a105fd8080fbdea540a0e031acf052451a1
 export TRELLIS_CONTROL_VERSION ?= fe1274b0a7a2f6eaefd6266b0e2cf193875cc14c
 export TRELLIS_T3_VERSION      ?= 4.0.0
 export UP4_VERSION             ?= 187763c2ab0e68cf085e44cab0d5b67e09aa9b6b
-export FABRIC_TNA_VERSION      ?= 126aba949906ca828812ec321d6163d00c37170c
+export CONQUEST_ONOS_VERSION   ?= 8ed81f38d77283cae5c70126f01af0c43fd082ee
+#export FABRIC_TNA_VERSION      ?= 126aba949906ca828812ec321d6163d00c37170c
+export FABRIC_TNA_VERSION      ?= 28a6b10017d3310d6fd0862b68f8ee2481419ec1
